@@ -44,7 +44,7 @@ class Crowling:
     isExistFolder = os.path.isdir(folderName)
     if isExistFolder:
       os.mkdir(folderName)
-    urlretrieve(src,f'{folderName}/{keyword}_{filename}.png')
+    urlretrieve(src,f'{folderName}/{keyword}_{filename}.png') #request로 받을려고 했는데 안되서 이걸로 함
 
 class CrowlingGoogle(Crowling):
   # def __init__(self): 
