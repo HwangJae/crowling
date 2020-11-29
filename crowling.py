@@ -40,47 +40,11 @@ class Crowling:
     self.driver.execute_script(f"window.scrollTo(0, {curScrollPos}+500)")
 
   def writeImgFile(self,keyword,filename,src):
-      urlretrieve(src,f'food/{keyword}/{keyword}_{filename}.png')
-
-class CrowlingInsta(Crowling):
-  def __init__(self):
-    self.idTag = "#loginForm > div > div > div > label > input"
-    self.pwTag = "#loginForm > div > div > div > label > input"
-    self.searchTag = "#react-root > section > nav > div > div > div > div > input"
-
-  def strImgTag(self, index):
-    imgTag = f"div > div > div:nth-child({index/3+1}) > div:nth-child({index%3+1}) > a > div > div > img"
-    return imgTag
-
-  def getImgSrc(self, index):
-    imgTag = self.soup.select(strImgTag(index))[0]
-
-  def login(self, id, pw):
-    idInput = self.driver.find_elements_by_css_selector(self.idTag)[0]
-    idInput.send_keys(id)
-    sleep(1)
-    passwordInput = self.driver.find_elements_by_css_selector(self.pwTag)[1]
-    passwordInput.send_keys(pw)
-    sleep(1)
-    passwordInput.submit()
-
-  def init(self):
-    pass
-
-  def process(self, url, maxNum):
-
-    srcList = []
-    for index in range(1, maxNum):
-      imgTag = getImgSrc(index)
-      if (
-        "src" in imgTag.attrs
-      ):  # 내부에 있는 항목들을 리스트로 가져옵니다 ex) {u'href': u'//www.wikimediafoundation.org/'}
-        src = imgTag.attrs["src"]
-        srcList.append(src)
-        print(src)
-      super().scrollDown()
-    return srcList
-
+    folderName = 'food/{keyword}'
+    isExistFolder = os.path.isdir(folderName)
+    if isExistFolder:
+      os.mkdir(folderName)
+    urlretrieve(src,f'{folderName}/{keyword}_{filename}.png')
 
 class CrowlingGoogle(Crowling):
   # def __init__(self): 
@@ -112,12 +76,55 @@ class CrowlingGoogle(Crowling):
         src = imgTag.attrs["src"]
         super().writeImgFile(keyword,index,src)
       super().scrollDown()
-    return srcList
 
 
-bot = CrowlingGoogle()
-srcList = bot.crowling("뿌링클", 1000)
-print(srcList)
+# class CrowlingInsta(Crowling):
+#   def __init__(self):
+#     self.idTag = "#loginForm > div > div > div > label > input"
+#     self.pwTag = "#loginForm > div > div > div > label > input"
+#     self.searchTag = "#react-root > section > nav > div > div > div > div > input"
+
+#   def strImgTag(self, index):
+#     imgTag = f"div > div > div:nth-child({index/3+1}) > div:nth-child({index%3+1}) > a > div > div > img"
+#     return imgTag
+
+#   def getImgSrc(self, index):
+#     imgTag = self.soup.select(strImgTag(index))[0]
+
+#   def login(self, id, pw):
+#     idInput = self.driver.find_elements_by_css_selector(self.idTag)[0]
+#     idInput.send_keys(id)
+#     sleep(1)
+#     passwordInput = self.driver.find_elements_by_css_selector(self.pwTag)[1]
+#     passwordInput.send_keys(pw)
+#     sleep(1)
+#     passwordInput.submit()
+
+#   def init(self):
+#     pass
+
+#   def process(self, url, maxNum):
+
+#     srcList = []
+#     for index in range(1, maxNum):
+#       imgTag = getImgSrc(index)
+#       if (
+#         "src" in imgTag.attrs
+#       ):  # 내부에 있는 항목들을 리스트로 가져옵니다 ex) {u'href': u'//www.wikimediafoundation.org/'}
+#         src = imgTag.attrs["src"]
+#         srcList.append(src)
+#         print(src)
+#       super().scrollDown()
+#     return srcList
+
+
+
+
+
+# bot = CrowlingGoogle()
+# srcList = bot.crowling("뿌링클", 1000)
+# print(srcList)
+
 # id =
 # password =
 
