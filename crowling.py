@@ -40,9 +40,9 @@ class Crowling:
     self.driver.execute_script(f"window.scrollTo(0, {curScrollPos}+500)")
 
   def writeImgFile(self,keyword,filename,src):
-    folderName = 'food/{keyword}'
+    folderName = f'food/{keyword}'
     isExistFolder = os.path.isdir(folderName)
-    if isExistFolder:
+    if not isExistFolder:
       os.mkdir(folderName)
     urlretrieve(src,f'{folderName}/{keyword}_{filename}.png') #request로 받을려고 했는데 안되서 이걸로 함
 
@@ -122,7 +122,7 @@ class CrowlingGoogle(Crowling):
 
 
 # bot = CrowlingGoogle()
-# srcList = bot.crowling("뿌링클", 1000)
+# srcList = bot.crowling("짜장면", 1000)
 # print(srcList)
 
 # id =
