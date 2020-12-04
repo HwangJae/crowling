@@ -8,74 +8,83 @@ import os
 from selenium.webdriver.common.keys import Keys
 from urllib.request import urlretrieve
 
+
 def sleep(sec):
-  time.sleep(sec)
+    time.sleep(sec)
 
 
 class Crowling:
-  def __init__(self):
-    self.driver = webdriver.Chrome(".\chromedriver.exe")
+    def __init__(self):
+        # self.driver = webdriver.Chrome(".\chromedriver.exe")  # 윈도우 사용자를 위한 코드
+        self.driver = webdriver.Chrome("chromedriver")  # 맥사용자를 위한 코드
 
-  def goPage(self, url):
-    # driver.get('https://www.instagram.com/')
-    self.driver.get(url)
-    sleep(3)
+    def goPage(self, url):
+        # driver.get('https://www.instagram.com/')
+        self.driver.get(url)
+        sleep(3)
 
-  def getCurHtml(self):
-    html = self.driver.page_source
-    soup = bs(html, "html.parser")  # beautifulSoup 연동
-    return soup
+    def getCurHtml(self):
+        html = self.driver.page_source
+        soup = bs(html, "html.parser")  # beautifulSoup 연동
+        return soup
 
-  def search(self, keyword):
-    searchInput = self.driver.find_elements_by_css_selector(self.searchTag)[0]
-    searchInput.send_keys(keyword)
-    sleep(1)
-    searchInput.send_keys(Keys.RETURN)
-    sleep(1)
-    searchInput.send_keys(Keys.RETURN)
-    sleep(3)
+    def search(self, keyword):
+        searchInput = self.driver.find_elements_by_css_selector(self.searchTag)[
+            0]
+        searchInput.send_keys(keyword)
+        sleep(1)
+        searchInput.send_keys(Keys.RETURN)
+        sleep(1)
+        searchInput.send_keys(Keys.RETURN)
+        sleep(3)
 
-  def scrollDown(self):
-    curScrollPos = "document.documentElement.scrollTop"
-    self.driver.execute_script(f"window.scrollTo(0, {curScrollPos}+500)")
+    def scrollDown(self):
+        curScrollPos = "document.documentElement.scrollTop"
+        self.driver.execute_script(f"window.scrollTo(0, {curScrollPos}+500)")
 
-  def writeImgFile(self,keyword,filename,src):
-    folderName = f'food/{keyword}'
-    isExistFolder = os.path.isdir(folderName)
-    if not isExistFolder:
-      os.mkdir(folderName)
-    urlretrieve(src,f'{folderName}/{keyword}_{filename}.png') #request로 받을려고 했는데 안되서 이걸로 함
+    def writeImgFile(self, keyword, filename, src):
+        folderName = f'food/{keyword}'
+        isExistFolder = os.path.isdir(folderName)
+        # if not isExistFolder:
+        #     os.mkdir(folderName)
+        if not os.path.isdir(folderName):
+            os.makedirs(folderName)
+        # request로 받을려고 했는데 안되서 이걸로 함
+        urlretrieve(src, f'{folderName}/{keyword}_{filename}.png')
+
 
 class CrowlingGoogle(Crowling):
-  # def __init__(self): 
-  #   super().__init__()
+    # def __init__(self):
+    #   super().__init__()
 
-  def strUrl(self,keyword):
-    return f"https://www.google.com/search?q={keyword}&sxsrf=ALeKk00DD1HmfNS4eOvuXsqTxTAsiuTzyg:1606650106650&source=lnms&tbm=isch&sa=X&ved=2ahUKEwj4g4qH1qftAhU1K6YKHTEWCIoQ_AUoAXoECAYQAw&cshid=1606650111833509&biw=1020&bih=786"
+    def strUrl(self, keyword):
+        return f"https://www.google.com/search?q={keyword}&sxsrf=ALeKk00DD1HmfNS4eOvuXsqTxTAsiuTzyg:1606650106650&source=lnms&tbm=isch&sa=X&ved=2ahUKEwj4g4qH1qftAhU1K6YKHTEWCIoQ_AUoAXoECAYQAw&cshid=1606650111833509&biw=1020&bih=786"
 
-  def convertImgTag(self):
-    imgTag = f"div > div > a > div > img"
-    return imgTag
+    def convertImgTag(self):
+        imgTag = f"div > div > a > div > img"
+        return imgTag
 
-  def init(self):
-    pass
+    def init(self):
+        pass
 
-  def getImgSrc(self, index):
-    soup = super().getCurHtml()
-    imgTag = soup.select(self.convertImgTag())[index]
-    return imgTag
+    def getImgSrc(self, index):
+        soup = super().getCurHtml()
+        imgTag = soup.select(self.convertImgTag())[index]
+        return imgTag
 
-  def crowling(self, keyword, maxNum):
-    super().goPage(self.strUrl(keyword))
-    
-    for index in range(1, maxNum):
-      imgTag = self.getImgSrc(index)
-      if imgTag == None: return
+    def crowling(self, keyword, maxNum):
+        super().goPage(self.strUrl(keyword))
 
-      if "src" in imgTag.attrs:  # 내부에 있는 항목들을 리스트로 가져옵니다 ex) {u'href': u'//www.wikimediafoundation.org/'}
-        src = imgTag.attrs["src"]
-        super().writeImgFile(keyword,index,src)
-      super().scrollDown()
+        for index in range(1, maxNum):
+            imgTag = self.getImgSrc(index)
+            if imgTag == None:
+                return
+
+            # 내부에 있는 항목들을 리스트로 가져옵니다 ex) {u'href': u'//www.wikimediafoundation.org/'}
+            if "src" in imgTag.attrs:
+                src = imgTag.attrs["src"]
+                super().writeImgFile(keyword, index, src)
+            super().scrollDown()
 
 
 # class CrowlingInsta(Crowling):
@@ -116,9 +125,6 @@ class CrowlingGoogle(Crowling):
 #         print(src)
 #       super().scrollDown()
 #     return srcList
-
-
-
 
 
 # bot = CrowlingGoogle()
