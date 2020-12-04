@@ -77,3 +77,5 @@ class naverCrawling:
                     h.write(img)
             n += 1
         print('다운로드 완료')
+
+        browser.quit()
